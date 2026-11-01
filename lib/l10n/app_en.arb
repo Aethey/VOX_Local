@@ -1,0 +1,303 @@
+{
+  "@@locale": "en",
+  "listen": "Listen",
+  "analysis": "Analysis",
+  "settings": "Settings",
+  "localSpeech": "On-device speech",
+  "offlineModels": "Offline models",
+  "recognitionLanguage": "Speech language",
+  "autoDetect": "Auto-detect",
+  "conversationAnalysis": "Conversation analysis",
+  "providerAndModel": "Provider & model",
+  "notConfigured": "Not configured",
+  "analysisTemplates": "Analysis templates",
+  "analysisInterval": "Analysis interval",
+  "runtimeStatus": "Runtime status",
+  "diagnostics": "Diagnostics",
+  "diagnosticsSummary": "Requests and retries, without keys or conversation text",
+  "privacyNotice": "Speech is processed on your device. Selected text is sent to your provider only when online analysis is enabled. API keys are stored in system secure storage.",
+  "appLanguage": "App language",
+  "systemLanguage": "System default",
+  "ready": "Ready",
+  "notReady": "Not ready",
+  "turboDescription": "Compressed · Multilingual",
+  "smallDescription": "Multilingual · Lower resource use",
+  "modelActiveNotice": "Finish recording before switching or deleting a model.",
+  "verifyingModel": "Verifying files…",
+  "preparingModel": "Loading the model from this device. The first load may take longer…",
+  "modelReady": "Ready · Available offline",
+  "modelInstalled": "Downloaded · Not loaded yet",
+  "modelMissing": "Not downloaded",
+  "inUse": "In use",
+  "prepareAndUse": "Load & use",
+  "downloadAndPrepare": "Download & prepare",
+  "deleteModel": "Delete model",
+  "modelAdvice": "Each platform uses its own model files. Download size is not runtime memory usage. If your device heats up or transcription falls behind, finish recording and try Small.",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "deleteModelBody": "You will need to download the model again to use it. Conversation records will be kept.",
+  "onlineAnalysis": "Online analysis",
+  "configureProviderFirst": "Set up a provider, model and API key first",
+  "analysisPrivacy": "When enabled, confirmed text from this recording is sent to its selected provider. Pausing analysis does not affect local transcription.",
+  "retry": "Retry",
+  "analysisResults": "Analysis results",
+  "recentAnalysis": "Showing the latest 100 analysis batches for this recording. Older results remain on this device.",
+  "configureAnalysisProvider": "Set up analysis provider",
+  "enableOnlineAnalysis": "Enable online analysis",
+  "noMatch": "No matches for the current analysis rules in this part of the conversation.",
+  "viewOriginal": "View original text",
+  "hideOriginal": "Hide original text",
+  "provider": "Provider",
+  "compatibleProvider": "Other compatible API",
+  "baseUrl": "API base URL",
+  "baseUrlHelp": "Enter the provider’s HTTPS URL, including /v1 if required",
+  "apiKey": "API key",
+  "savedKeyHelp": "A key is saved. Leave blank to keep it; it is never displayed here.",
+  "keyHelp": "Saved only in system secure storage, never in logs",
+  "showKey": "Show key",
+  "hideKey": "Hide key",
+  "testConnection": "Test connection & fetch models",
+  "modelId": "Model ID",
+  "modelIdHelp": "Choose from the list or enter a supported model ID",
+  "chooseAvailableModel": "Choose an available model",
+  "saveConfiguration": "Save configuration",
+  "configurationSaved": "Configuration saved. Analysis will use this model.",
+  "providerSaveHelp": "You can save offline. Changing providers does not move existing tasks. After fixing the current configuration, retry from Analysis.",
+  "savedTemplates": "Presets & saved templates",
+  "editTemplate": "Edit template",
+  "customTemplate": "Custom template",
+  "templateName": "Template name",
+  "analysisRules": "Analysis rules",
+  "rulesHint": "For example: If the conversation mentions a budget, list the amount, purpose and open questions, with supporting quotes.",
+  "listeningForRules": "Listening for your analysis rules…",
+  "finishDictation": "Finish & insert text",
+  "dictateRules": "Dictate rules",
+  "saveAndUse": "Save & use",
+  "templateSaveHelp": "Rules take effect after saving. Changing rules schedules analysis of the current conversation with the new rules. Dictated drafts are not added to the conversation.",
+  "presetActions": "Actions & tasks",
+  "presetDecisions": "Decisions & disagreements",
+  "presetRisks": "Risks & questions",
+  "presetActionsRules": "Identify explicit tasks, owners and deadlines. Mark missing details as open questions; do not invent them.",
+  "presetDecisionsRules": "Identify agreed decisions, unresolved disagreements and open questions. Distinguish proposals from final decisions.",
+  "presetRisksRules": "Identify explicit risks, constraints, dependencies and unanswered questions, with supporting quotes.",
+  "openingMic": "Opening microphone",
+  "finalizingRecording": "Finishing the last segment",
+  "stopRecording": "Stop recording",
+  "stopAndKeep": "Stop & keep recording",
+  "preparingOfflineModel": "Preparing offline model",
+  "chooseDownloadModel": "Choose & download an offline model",
+  "startNewRecording": "Start a new recording",
+  "startRecording": "Start recording",
+  "transcript": "Transcript",
+  "recording": "Recording",
+  "microphoneLevel": "Microphone level",
+  "flowDescription": "Record audio, transcribe on device, optionally analyze online",
+  "recordAudio": "Record audio",
+  "localText": "On-device text",
+  "optionalAnalysis": "Optional online analysis",
+  "refreshLogs": "Refresh logs",
+  "logPrivacy": "Only status, error categories and retry counts are logged. Up to 300 entries are kept; the latest 100 are shown. Keys and conversation text are excluded.",
+  "noLogs": "No diagnostic entries yet.",
+  "analysisSucceeded": "Analysis complete",
+  "analysisFailed": "Analysis request failed",
+  "providerRequestFailed": "Provider request failed",
+  "modelPrepareFailedLog": "Model preparation failed",
+  "speechStartFailedLog": "Recording could not start",
+  "speechInterruptedLog": "Recording interrupted",
+  "runtimeLog": "Runtime status",
+  "success": "Success",
+  "reopen": "Try again",
+  "microphonePermission": "Use the microphone to transcribe speech on this device.",
+  "seconds": "{count} s",
+  "@seconds": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "segmentCount": "{count, plural, one{1 segment} other{{count} segments}}",
+  "@segmentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "downloadProgress": "Downloading {percent}%",
+  "@downloadProgress": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "analysisEvery": "Check for new text every {seconds} seconds",
+  "@analysisEvery": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "focusTemplate": "Focus: {name}",
+  "@focusTemplate": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "waitingBatches": "{count, plural, one{1 batch pending · You can keep recording} other{{count} batches pending · You can keep recording}}",
+  "@waitingBatches": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "openQuestions": "Open questions: {questions}",
+  "@openQuestions": {
+    "placeholders": {
+      "questions": {
+        "type": "String"
+      }
+    }
+  },
+  "modelsFetched": "{count, plural, one{Connected. Fetched 1 model.} other{Connected. Fetched {count} models.}}",
+  "@modelsFetched": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectedTemplate": "Selected: {name}",
+  "@selectedTemplate": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "editingTemplate": "Edit: {name}",
+  "@editingTemplate": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "retryAttempt": "Attempt {count}",
+  "@retryAttempt": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteModelTitle": "Delete {name}?",
+  "@deleteModelTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "modelStatus": "{name} · {status}",
+  "@modelStatus": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "message": "{code, select, operationFailed {Operation failed. Check the status and try again.} storageUnavailable {Local data could not be opened. Check available device storage.} engineUnavailable {Speech engine unavailable. Use the iOS or Android app.} finishBeforeModelChange {Finish recording before loading or switching a model.} finishRecordingFirst {Finish the current recording first.} modelPrepareFailed {Model preparation failed. Check your connection and storage, then retry.} modelDeleteFailed {Model deletion failed. Check device storage and try again.} downloadModelFirst {Download and prepare an offline model in Settings first.} speechStartFailed {Could not start recording. Check microphone permission and model status.} speechInterrupted {Recording interrupted. Confirmed text has been kept.} audioInterrupted {Audio was interrupted by the system. Confirmed text was kept. Stop and start again.} speechProcessingPaused {Speech processing paused. Check storage or switch to Small. Confirmed text has been kept.} transcriptSaveFailed {Text could not be saved. Check storage. Native records will be recovered at the next launch.} speechStopFailed {Could not finish processing. Confirmed text has been kept.} schedulingFailed {Analysis scheduling is unavailable. Transcription is still kept.} unsupportedInterval {Unsupported analysis interval.} unsupportedLocale {Unsupported app language.} unsupportedAnalysisLanguage {Unsupported analysis output language.} configurationClearFailed {Configuration not cleared. Check system secure storage availability.} enterApiKey {Enter this provider’s API key.} invalidTemplate {Enter a template name and rules of up to 4,000 characters.} invalidEndpoint {Use a valid HTTPS base URL without credentials or query parameters.} enterModelId {Choose or enter a model ID.} budgetTooSmall {The model input or output budget is too small.} invalidRulesLength {Analysis rules must contain 1–4,000 characters.} rulesOverBudget {Analysis rules exceed the input budget.} segmentOverBudget {A transcript segment exceeds the input budget.} queueFull {The analysis queue is full. Original text is kept. Resolve pending tasks and retry.} saveApiKey {Save an API key in Settings.} analysisIncomplete {Analysis is incomplete. Check Diagnostics.} invalidAnalysisResult {The model returned an invalid format or quote reference. You can retry manually.} responseTooLarge {The provider response is too large.} analysisTimeout {Analysis timed out. It will retry automatically.} invalidCredentials {Invalid key or model access denied. Check Settings.} insufficientBalance {Provider balance is insufficient. Top up and retry.} rateLimited {Provider rate limit reached. It will retry automatically.} providerUnavailable {Provider temporarily unavailable. It will retry automatically.} invalidRequest {Unsupported endpoint, model or request parameters. Check Settings.} analysisPaused {Analysis paused.} invalidCertificate {Could not verify the provider’s secure connection.} unparseableResponse {The provider returned content that could not be parsed.} networkInterrupted {Network connection interrupted. It will retry automatically.} responseContractMismatch {The provider response does not match the API format.} emptyResponse {The provider returned no valid analysis.} incompleteOutput {Model output is incomplete. Check the output budget and retry.} noProviderModels {The provider returned no models. You can enter a model ID manually.} fetchModelsFailed {Could not fetch models. Check Settings or enter a model ID manually.} configurationSaveFailed {Configuration not saved. Check system secure storage availability.} finishBeforeDictation {Finish the conversation recording before dictating a template.} saveTemplateFailed {Could not save the template. Try again.} analysisNeedsRetry {Some analysis needs a retry. Recording is unaffected.} logsUnavailable {Logs are unavailable. Recording and transcription are unaffected.} recordingOperationBusy {A recording operation is in progress. Please wait.} recordingNotFound {This recording no longer exists. Return to Recordings.} invalidRecordingTitle {Enter a recording name of 1–80 characters.} recordingOpenFailed {Could not open the recording. Try again.} recordingListFailed {Could not load recordings. Pull to refresh or retry.} createNewRecordingFirst {This recording has ended. Start a new recording.} chooseRecordingFirst {Open or create a recording first.} modelLoadFailed {The model is downloaded but could not be loaded. Retry loading or switch to Small. No new download is required.} other {Operation failed. Check the status and try again.}}",
+  "@message": {
+    "description": "Stable application and native error codes; unknown or legacy messages use a safe localized fallback.",
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "deletingModel": "Deleting model…",
+  "modelDeleteFailedLog": "Model deletion failed",
+  "diagnosticKind": "{kind, select, network {Network} timeout {Timeout} rateLimited {Rate limit} server {Provider service} credentials {Credentials} balance {Provider balance} invalidRequest {Request configuration} invalidResponse {Response format} storage {Local storage} speech {Speech engine} cancelled {Paused} storage_or_configuration {Storage or configuration} other {Runtime status}}",
+  "@diagnosticKind": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      }
+    }
+  },
+  "latestTranscript": "Jump to latest text",
+  "recordings": "Recordings",
+  "newRecording": "New recording",
+  "returnToRecording": "Return to recording",
+  "analysisLanguage": "Analysis output language",
+  "clearProviderConfiguration": "Clear configuration",
+  "clearProviderTitle": "Clear provider configuration?",
+  "clearProviderBody": "The API key is removed from system secure storage and the provider and model settings are reset. Recordings with analysis enabled pause until a configuration is saved again.",
+  "providerConfigurationCleared": "Provider configuration cleared",
+  "noRecordings": "No recordings yet",
+  "noMatchingRecordings": "No matching recordings",
+  "searchRecordings": "Search titles or text",
+  "clearSearch": "Clear search",
+  "loadMoreRecordings": "Load more recordings",
+  "recordingActions": "Recording actions",
+  "resumeRecording": "Resume recording",
+  "finishRecordingBeforeResume": "Finish the current recording before resuming another",
+  "renameRecording": "Rename",
+  "recordingName": "Recording name",
+  "saveRecordingName": "Save name",
+  "copyTranscript": "Copy transcript",
+  "noTranscriptToCopy": "This recording has no confirmed text yet.",
+  "transcriptCopied": "Transcript copied",
+  "deleteRecording": "Delete recording",
+  "deleteRecordingBody": "This permanently deletes this recording’s text, analysis results and recovery files. Downloaded models are kept.",
+  "finishRecordingBeforeDelete": "Finish the current recording first",
+  "recordingInterrupted": "Interrupted",
+  "recoveredRecordingNotice": "The last recording was interrupted. Confirmed text has been recovered. You can review it or start a new recording.",
+  "noConfirmedTranscript": "No confirmed text in this recording",
+  "recordBeforeAnalysis": "Start a recording to enable online analysis for it.",
+  "transcriptTab": "Transcript",
+  "localModelLoading": "Loading local model",
+  "downloadModelToStart": "Download a model once, then reuse it offline.",
+  "recordingDateTitle": "Recording {date}",
+  "@recordingDateTitle": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteRecordingTitle": "Delete “{name}”?",
+  "@deleteRecordingTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "savedRecordingDuration": "Saved · {duration}",
+  "@savedRecordingDuration": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "pausedAnalysisBatches": "{count} analysis batches paused",
+  "@pausedAnalysisBatches": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recognitionPreview": "Recognizing · may change"
+}
