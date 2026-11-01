@@ -1,37 +1,37 @@
 # Vox Local
 
-离线语音转写 App（Flutter，iOS / Android）。录音在设备上实时转成文字，不上传音频；转写结果可选配自己的大模型 API 做对话分析（待办、决策、风险等）。
+オフライン音声文字起こしアプリ（Flutter、iOS / Android）。録音を端末内でリアルタイムに文字起こしし、音声はアップロードしません。文字起こし結果は、任意で自分の LLM API を設定して会話分析（タスク・決定事項・リスクなど）に使えます。
 
-## 功能
+## 機能
 
-- 录音 → 本地实时转写，按时间线保存，支持中断后继续录制
-- 记录库：搜索、重命名、复制、删除
-- 可选的在线分析：自带/自定义分析模板，按设定间隔增量分析，结果附原文依据
-- 界面语言：中文 / 日本語 / English
+- 録音 → 端末内でリアルタイム文字起こし、タイムライン単位で保存、中断後の再開に対応
+- 記録ライブラリ：検索・名前変更・コピー・削除
+- 任意のオンライン分析：プリセット / カスタムの分析テンプレート、設定した間隔での差分分析、結果に原文の根拠を添付
+- 表示言語：中文 / 日本語 / English
 
-## 模型
+## モデル
 
-**语音识别（本地运行，首次使用需下载）**
+**音声認識（端末内で実行、初回利用時にダウンロード）**
 
-| 选项 | iOS（WhisperKit / Core ML） | Android（whisper.cpp v1.9.5 / GGML） |
+| 選択肢 | iOS（WhisperKit / Core ML） | Android（whisper.cpp v1.9.5 / GGML） |
 | --- | --- | --- |
 | Large V3 Turbo | `openai_whisper-large-v3-v20240930_626MB` | `ggml-large-v3-turbo-q5_0.bin` |
 | Small | `openai_whisper-small` | `ggml-small-q5_1.bin` |
 
-来源分别为 Hugging Face 的 `argmaxinc/whisperkit-coreml` 与 `ggerganov/whisper.cpp`。
+取得元はそれぞれ Hugging Face の `argmaxinc/whisperkit-coreml` と `ggerganov/whisper.cpp` です。
 
-**对话分析（可选，需自行配置）**
+**会話分析（任意、要設定）**
 
 - DeepSeek
-- 任意 OpenAI 兼容接口（`/chat/completions`），填写地址、API Key 和模型 ID
+- 任意の OpenAI 互換 API（`/chat/completions`）：エンドポイント、API キー、モデル ID を入力
 
-API Key 只存系统安全存储，不进日志。
+API キーは OS のセキュアストレージにのみ保存し、ログには書き出しません。
 
-## 开发
+## 開発
 
 ```sh
 flutter pub get
-dart run tool/verify.dart   # 重新生成代码并检查、format、analyze、test
+dart run tool/verify.dart   # コード再生成と差分チェック、format、analyze、test
 ```
 
-iOS 依赖 WhisperKit（SwiftPM），Android 通过 CMake 拉取 whisper.cpp，首次构建需要联网。
+iOS は WhisperKit（SwiftPM）に依存し、Android は CMake で whisper.cpp を取得するため、初回ビルドにはネットワーク接続が必要です。
