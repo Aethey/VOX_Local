@@ -96,6 +96,100 @@ void main() {
     await fixture.analysis.tick();
     expect(fixture.store.entries.length, before);
   });
+  group('whole-transcript analysis', () {
+    Future<PipelineFixture> finished({bool analysisEnabled = true}) async {
+      final fixture = PipelineFixture();
+      await fixture.initialize();
+      addTearDown(fixture.dispose);
+      final record = recordingFixture(analysisEnabled: analysisEnabled);
+      await fixture.store.saveRecording(record);
+      for (var i = 1; i <= 3; i++) {
+        await fixture.store.appendSegment(segment(i));
+      }
+      fixture.session.emit(
+        SessionState(
+          id: 'session',
+          record: record,
+          phase: SessionPhase.completed,
+          segments: await fixture.store.segments('session'),
+        ),
+      );
+      return fixture;
+    }
+
+    test('queues one job carrying every segment and runs it', () async {
+      final fixture = await finished();
+      await fixture.analysis.analyzeWhole();
+      await Future<void>.delayed(Duration.zero);
+      final jobs = fixture.store.queue.values.toList();
+      expect(jobs, hasLength(1));
+      expect(jobs.single.whole, isTrue);
+      expect(jobs.single.segments.map((s) => s.sequence), [1, 2, 3]);
+      expect(jobs.single.context, isEmpty);
+      expect(fixture.provider.calls, 1);
+      // The incremental planner must not re-send the same text afterwards.
+      await fixture.analysis.tick(force: true);
+      expect(fixture.store.queue, hasLength(1));
+    });
+
+    test('enables analysis on a record that had it off', () async {
+      final fixture = await finished(analysisEnabled: false);
+      await fixture.analysis.analyzeWhole();
+      await Future<void>.delayed(Duration.zero);
+      expect(fixture.store.records['session']!.analysisEnabled, isTrue);
+      expect(fixture.store.queue.values.single.whole, isTrue);
+      expect(fixture.provider.calls, 1);
+    });
+
+    test('each run is a distinct job', () async {
+      final fixture = await finished();
+      await fixture.analysis.analyzeWhole();
+      fixture.clock.advance(const Duration(seconds: 1));
+      await fixture.analysis.analyzeWhole();
+      expect(fixture.store.queue.values.where((j) => j.whole), hasLength(2));
+    });
+
+    test('rejects a transcript over the input budget', () async {
+      final fixture = await finished();
+      await fixture.store.appendSegment(
+        segment(4, text: List.filled(12000, '长').join()),
+      );
+      await expectLater(
+        fixture.analysis.analyzeWhole(),
+        throwsA(
+          isA<FormatException>().having(
+            (e) => e.message,
+            'message',
+            'transcriptOverBudget',
+          ),
+        ),
+      );
+      expect(fixture.store.queue, isEmpty);
+    });
+
+    test('refuses while the recording is still running', () async {
+      final fixture = PipelineFixture();
+      await fixture.initialize();
+      addTearDown(fixture.dispose);
+      fixture.session.emit(
+        SessionState(
+          id: 'session',
+          record: recordingFixture(status: RecordingStatus.recording),
+          phase: SessionPhase.recording,
+        ),
+      );
+      await expectLater(
+        fixture.analysis.analyzeWhole(),
+        throwsA(
+          isA<FormatException>().having(
+            (e) => e.message,
+            'message',
+            'finishRecordingFirst',
+          ),
+        ),
+      );
+    });
+  });
   test(
     'full queue still dispatches existing work and preserves unscheduled text',
     () async {

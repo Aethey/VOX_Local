@@ -1226,7 +1226,9 @@ as int,
 mixin _$AnalysisJob {
 
  String get id; String get sessionId; ProviderProfile get profile; AnalysisTemplate get template; List<TranscriptSegment> get segments; String get context; DateTime get createdAt;/// Language the provider is asked to write findings in.
- String get language; JobPhase get phase; int get attempts; DateTime? get scheduledAt; String? get error; AnalysisResult? get result;
+ String get language;/// True when the job carries the full transcript in one request
+/// (manual re-analysis) instead of an incremental batch.
+ bool get whole; JobPhase get phase; int get attempts; DateTime? get scheduledAt; String? get error; AnalysisResult? get result;
 /// Create a copy of AnalysisJob
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1240,20 +1242,20 @@ $AnalysisJobCopyWith<AnalysisJob> get copyWith => _$AnalysisJobCopyWithImpl<Anal
 @override
 bool operator ==(Object other) {
   final _this = this as AnalysisJob;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AnalysisJob&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.sessionId, _this.sessionId) || other.sessionId == _this.sessionId)&&(identical(other.profile, _this.profile) || other.profile == _this.profile)&&(identical(other.template, _this.template) || other.template == _this.template)&&const DeepCollectionEquality().equals(other.segments, _this.segments)&&(identical(other.context, _this.context) || other.context == _this.context)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.language, _this.language) || other.language == _this.language)&&(identical(other.phase, _this.phase) || other.phase == _this.phase)&&(identical(other.attempts, _this.attempts) || other.attempts == _this.attempts)&&(identical(other.scheduledAt, _this.scheduledAt) || other.scheduledAt == _this.scheduledAt)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.result, _this.result) || other.result == _this.result));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AnalysisJob&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.sessionId, _this.sessionId) || other.sessionId == _this.sessionId)&&(identical(other.profile, _this.profile) || other.profile == _this.profile)&&(identical(other.template, _this.template) || other.template == _this.template)&&const DeepCollectionEquality().equals(other.segments, _this.segments)&&(identical(other.context, _this.context) || other.context == _this.context)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.language, _this.language) || other.language == _this.language)&&(identical(other.whole, _this.whole) || other.whole == _this.whole)&&(identical(other.phase, _this.phase) || other.phase == _this.phase)&&(identical(other.attempts, _this.attempts) || other.attempts == _this.attempts)&&(identical(other.scheduledAt, _this.scheduledAt) || other.scheduledAt == _this.scheduledAt)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.result, _this.result) || other.result == _this.result));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as AnalysisJob;
-  return Object.hash(runtimeType,_this.id,_this.sessionId,_this.profile,_this.template,const DeepCollectionEquality().hash(_this.segments),_this.context,_this.createdAt,_this.language,_this.phase,_this.attempts,_this.scheduledAt,_this.error,_this.result);
+  return Object.hash(runtimeType,_this.id,_this.sessionId,_this.profile,_this.template,const DeepCollectionEquality().hash(_this.segments),_this.context,_this.createdAt,_this.language,_this.whole,_this.phase,_this.attempts,_this.scheduledAt,_this.error,_this.result);
 }
 
 @override
 String toString() {
   final _this = this as AnalysisJob;
-  return 'AnalysisJob(id: ${_this.id}, sessionId: ${_this.sessionId}, profile: ${_this.profile}, template: ${_this.template}, segments: ${_this.segments}, context: ${_this.context}, createdAt: ${_this.createdAt}, language: ${_this.language}, phase: ${_this.phase}, attempts: ${_this.attempts}, scheduledAt: ${_this.scheduledAt}, error: ${_this.error}, result: ${_this.result})';
+  return 'AnalysisJob(id: ${_this.id}, sessionId: ${_this.sessionId}, profile: ${_this.profile}, template: ${_this.template}, segments: ${_this.segments}, context: ${_this.context}, createdAt: ${_this.createdAt}, language: ${_this.language}, whole: ${_this.whole}, phase: ${_this.phase}, attempts: ${_this.attempts}, scheduledAt: ${_this.scheduledAt}, error: ${_this.error}, result: ${_this.result})';
 }
 
 
@@ -1264,7 +1266,7 @@ abstract mixin class $AnalysisJobCopyWith<$Res>  {
   factory $AnalysisJobCopyWith(AnalysisJob value, $Res Function(AnalysisJob) _then) = _$AnalysisJobCopyWithImpl;
 @useResult
 $Res call({
- String id, String sessionId, ProviderProfile profile, AnalysisTemplate template, List<TranscriptSegment> segments, String context, DateTime createdAt, String language, JobPhase phase, int attempts, DateTime? scheduledAt, String? error, AnalysisResult? result
+ String id, String sessionId, ProviderProfile profile, AnalysisTemplate template, List<TranscriptSegment> segments, String context, DateTime createdAt, String language, bool whole, JobPhase phase, int attempts, DateTime? scheduledAt, String? error, AnalysisResult? result
 });
 
 
@@ -1281,7 +1283,7 @@ class _$AnalysisJobCopyWithImpl<$Res>
 
 /// Create a copy of AnalysisJob
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? sessionId = null,Object? profile = null,Object? template = null,Object? segments = null,Object? context = null,Object? createdAt = null,Object? language = null,Object? phase = null,Object? attempts = null,Object? scheduledAt = freezed,Object? error = freezed,Object? result = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? sessionId = null,Object? profile = null,Object? template = null,Object? segments = null,Object? context = null,Object? createdAt = null,Object? language = null,Object? whole = null,Object? phase = null,Object? attempts = null,Object? scheduledAt = freezed,Object? error = freezed,Object? result = freezed,}) {
   return _then(AnalysisJob(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,sessionId: null == sessionId ? _self.sessionId : sessionId // ignore: cast_nullable_to_non_nullable
@@ -1291,7 +1293,8 @@ as AnalysisTemplate,segments: null == segments ? _self.segments : segments // ig
 as List<TranscriptSegment>,context: null == context ? _self.context : context // ignore: cast_nullable_to_non_nullable
 as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,language: null == language ? _self.language : language // ignore: cast_nullable_to_non_nullable
-as String,phase: null == phase ? _self.phase : phase // ignore: cast_nullable_to_non_nullable
+as String,whole: null == whole ? _self.whole : whole // ignore: cast_nullable_to_non_nullable
+as bool,phase: null == phase ? _self.phase : phase // ignore: cast_nullable_to_non_nullable
 as JobPhase,attempts: null == attempts ? _self.attempts : attempts // ignore: cast_nullable_to_non_nullable
 as int,scheduledAt: freezed == scheduledAt ? _self.scheduledAt : scheduledAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
@@ -1411,10 +1414,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String sessionId,  ProviderProfile profile,  AnalysisTemplate template,  List<TranscriptSegment> segments,  String context,  DateTime createdAt,  String language,  JobPhase phase,  int attempts,  DateTime? scheduledAt,  String? error,  AnalysisResult? result)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String sessionId,  ProviderProfile profile,  AnalysisTemplate template,  List<TranscriptSegment> segments,  String context,  DateTime createdAt,  String language,  bool whole,  JobPhase phase,  int attempts,  DateTime? scheduledAt,  String? error,  AnalysisResult? result)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AnalysisJob() when $default != null:
-return $default(_that.id,_that.sessionId,_that.profile,_that.template,_that.segments,_that.context,_that.createdAt,_that.language,_that.phase,_that.attempts,_that.scheduledAt,_that.error,_that.result);case _:
+return $default(_that.id,_that.sessionId,_that.profile,_that.template,_that.segments,_that.context,_that.createdAt,_that.language,_that.whole,_that.phase,_that.attempts,_that.scheduledAt,_that.error,_that.result);case _:
   return orElse();
 
 }
@@ -1432,10 +1435,10 @@ return $default(_that.id,_that.sessionId,_that.profile,_that.template,_that.segm
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String sessionId,  ProviderProfile profile,  AnalysisTemplate template,  List<TranscriptSegment> segments,  String context,  DateTime createdAt,  String language,  JobPhase phase,  int attempts,  DateTime? scheduledAt,  String? error,  AnalysisResult? result)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String sessionId,  ProviderProfile profile,  AnalysisTemplate template,  List<TranscriptSegment> segments,  String context,  DateTime createdAt,  String language,  bool whole,  JobPhase phase,  int attempts,  DateTime? scheduledAt,  String? error,  AnalysisResult? result)  $default,) {final _that = this;
 switch (_that) {
 case _AnalysisJob():
-return $default(_that.id,_that.sessionId,_that.profile,_that.template,_that.segments,_that.context,_that.createdAt,_that.language,_that.phase,_that.attempts,_that.scheduledAt,_that.error,_that.result);case _:
+return $default(_that.id,_that.sessionId,_that.profile,_that.template,_that.segments,_that.context,_that.createdAt,_that.language,_that.whole,_that.phase,_that.attempts,_that.scheduledAt,_that.error,_that.result);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1452,10 +1455,10 @@ return $default(_that.id,_that.sessionId,_that.profile,_that.template,_that.segm
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String sessionId,  ProviderProfile profile,  AnalysisTemplate template,  List<TranscriptSegment> segments,  String context,  DateTime createdAt,  String language,  JobPhase phase,  int attempts,  DateTime? scheduledAt,  String? error,  AnalysisResult? result)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String sessionId,  ProviderProfile profile,  AnalysisTemplate template,  List<TranscriptSegment> segments,  String context,  DateTime createdAt,  String language,  bool whole,  JobPhase phase,  int attempts,  DateTime? scheduledAt,  String? error,  AnalysisResult? result)?  $default,) {final _that = this;
 switch (_that) {
 case _AnalysisJob() when $default != null:
-return $default(_that.id,_that.sessionId,_that.profile,_that.template,_that.segments,_that.context,_that.createdAt,_that.language,_that.phase,_that.attempts,_that.scheduledAt,_that.error,_that.result);case _:
+return $default(_that.id,_that.sessionId,_that.profile,_that.template,_that.segments,_that.context,_that.createdAt,_that.language,_that.whole,_that.phase,_that.attempts,_that.scheduledAt,_that.error,_that.result);case _:
   return null;
 
 }
@@ -1467,7 +1470,7 @@ return $default(_that.id,_that.sessionId,_that.profile,_that.template,_that.segm
 @JsonSerializable()
 
 class _AnalysisJob extends AnalysisJob {
-  const _AnalysisJob({required this.id, required this.sessionId, required this.profile, required this.template, required  List<TranscriptSegment> segments, required this.context, required this.createdAt, this.language = 'zh', this.phase = JobPhase.pending, this.attempts = 0, this.scheduledAt, this.error, this.result}): _segments = segments,super._();
+  const _AnalysisJob({required this.id, required this.sessionId, required this.profile, required this.template, required  List<TranscriptSegment> segments, required this.context, required this.createdAt, this.language = 'zh', this.whole = false, this.phase = JobPhase.pending, this.attempts = 0, this.scheduledAt, this.error, this.result}): _segments = segments,super._();
   factory _AnalysisJob.fromJson(Map<String, dynamic> json) => _$AnalysisJobFromJson(json);
 
 @override final  String id;
@@ -1485,6 +1488,9 @@ class _AnalysisJob extends AnalysisJob {
 @override final  DateTime createdAt;
 /// Language the provider is asked to write findings in.
 @override@JsonKey() final  String language;
+/// True when the job carries the full transcript in one request
+/// (manual re-analysis) instead of an incremental batch.
+@override@JsonKey() final  bool whole;
 @override@JsonKey() final  JobPhase phase;
 @override@JsonKey() final  int attempts;
 @override final  DateTime? scheduledAt;
@@ -1504,18 +1510,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _AnalysisJob&&(identical(other.id, id) || other.id == id)&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId)&&(identical(other.profile, profile) || other.profile == profile)&&(identical(other.template, template) || other.template == template)&&const DeepCollectionEquality().equals(other.segments, _segments)&&(identical(other.context, context) || other.context == context)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.language, language) || other.language == language)&&(identical(other.phase, phase) || other.phase == phase)&&(identical(other.attempts, attempts) || other.attempts == attempts)&&(identical(other.scheduledAt, scheduledAt) || other.scheduledAt == scheduledAt)&&(identical(other.error, error) || other.error == error)&&(identical(other.result, result) || other.result == result));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _AnalysisJob&&(identical(other.id, id) || other.id == id)&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId)&&(identical(other.profile, profile) || other.profile == profile)&&(identical(other.template, template) || other.template == template)&&const DeepCollectionEquality().equals(other.segments, _segments)&&(identical(other.context, context) || other.context == context)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.language, language) || other.language == language)&&(identical(other.whole, whole) || other.whole == whole)&&(identical(other.phase, phase) || other.phase == phase)&&(identical(other.attempts, attempts) || other.attempts == attempts)&&(identical(other.scheduledAt, scheduledAt) || other.scheduledAt == scheduledAt)&&(identical(other.error, error) || other.error == error)&&(identical(other.result, result) || other.result == result));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,sessionId,profile,template,const DeepCollectionEquality().hash(_segments),context,createdAt,language,phase,attempts,scheduledAt,error,result);
+    return Object.hash(runtimeType,id,sessionId,profile,template,const DeepCollectionEquality().hash(_segments),context,createdAt,language,whole,phase,attempts,scheduledAt,error,result);
 }
 
 @override
 String toString() {
-    return 'AnalysisJob(id: $id, sessionId: $sessionId, profile: $profile, template: $template, segments: $segments, context: $context, createdAt: $createdAt, language: $language, phase: $phase, attempts: $attempts, scheduledAt: $scheduledAt, error: $error, result: $result)';
+    return 'AnalysisJob(id: $id, sessionId: $sessionId, profile: $profile, template: $template, segments: $segments, context: $context, createdAt: $createdAt, language: $language, whole: $whole, phase: $phase, attempts: $attempts, scheduledAt: $scheduledAt, error: $error, result: $result)';
 }
 
 
@@ -1526,7 +1532,7 @@ abstract mixin class _$AnalysisJobCopyWith<$Res> implements $AnalysisJobCopyWith
   factory _$AnalysisJobCopyWith(_AnalysisJob value, $Res Function(_AnalysisJob) _then) = __$AnalysisJobCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String sessionId, ProviderProfile profile, AnalysisTemplate template, List<TranscriptSegment> segments, String context, DateTime createdAt, String language, JobPhase phase, int attempts, DateTime? scheduledAt, String? error, AnalysisResult? result
+ String id, String sessionId, ProviderProfile profile, AnalysisTemplate template, List<TranscriptSegment> segments, String context, DateTime createdAt, String language, bool whole, JobPhase phase, int attempts, DateTime? scheduledAt, String? error, AnalysisResult? result
 });
 
 
@@ -1543,7 +1549,7 @@ class __$AnalysisJobCopyWithImpl<$Res>
 
 /// Create a copy of AnalysisJob
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? sessionId = null,Object? profile = null,Object? template = null,Object? segments = null,Object? context = null,Object? createdAt = null,Object? language = null,Object? phase = null,Object? attempts = null,Object? scheduledAt = freezed,Object? error = freezed,Object? result = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? sessionId = null,Object? profile = null,Object? template = null,Object? segments = null,Object? context = null,Object? createdAt = null,Object? language = null,Object? whole = null,Object? phase = null,Object? attempts = null,Object? scheduledAt = freezed,Object? error = freezed,Object? result = freezed,}) {
   return _then(_AnalysisJob(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,sessionId: null == sessionId ? _self.sessionId : sessionId // ignore: cast_nullable_to_non_nullable
@@ -1553,7 +1559,8 @@ as AnalysisTemplate,segments: null == segments ? _self._segments : segments // i
 as List<TranscriptSegment>,context: null == context ? _self.context : context // ignore: cast_nullable_to_non_nullable
 as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,language: null == language ? _self.language : language // ignore: cast_nullable_to_non_nullable
-as String,phase: null == phase ? _self.phase : phase // ignore: cast_nullable_to_non_nullable
+as String,whole: null == whole ? _self.whole : whole // ignore: cast_nullable_to_non_nullable
+as bool,phase: null == phase ? _self.phase : phase // ignore: cast_nullable_to_non_nullable
 as JobPhase,attempts: null == attempts ? _self.attempts : attempts // ignore: cast_nullable_to_non_nullable
 as int,scheduledAt: freezed == scheduledAt ? _self.scheduledAt : scheduledAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable

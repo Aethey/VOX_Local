@@ -127,6 +127,7 @@ _AnalysisJob _$AnalysisJobFromJson(Map<String, dynamic> json) => _AnalysisJob(
   context: json['context'] as String,
   createdAt: DateTime.parse(json['createdAt'] as String),
   language: json['language'] as String? ?? 'zh',
+  whole: json['whole'] as bool? ?? false,
   phase:
       $enumDecodeNullable(_$JobPhaseEnumMap, json['phase']) ?? JobPhase.pending,
   attempts: (json['attempts'] as num?)?.toInt() ?? 0,
@@ -149,6 +150,7 @@ Map<String, dynamic> _$AnalysisJobToJson(_AnalysisJob instance) =>
       'context': instance.context,
       'createdAt': instance.createdAt.toIso8601String(),
       'language': instance.language,
+      'whole': instance.whole,
       'phase': _$JobPhaseEnumMap[instance.phase]!,
       'attempts': instance.attempts,
       'scheduledAt': instance.scheduledAt?.toIso8601String(),

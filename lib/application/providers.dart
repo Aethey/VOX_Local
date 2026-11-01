@@ -152,6 +152,8 @@ class AnalysisController extends Notifier<List<AnalysisJob>> {
   }
 
   Future<void> retry() => ref.read(runtimeProvider).analysis.retry();
+  Future<void> analyzeWhole() =>
+      ref.read(runtimeProvider).analysis.analyzeWhole();
   Future<void> configure(bool enabled, {bool useCurrentSettings = false}) => ref
       .read(runtimeProvider)
       .analysis

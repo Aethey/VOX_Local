@@ -145,6 +145,15 @@ class AppLocalizationsJa extends AppLocalizations {
   String get enableOnlineAnalysis => 'オンライン分析を有効にする';
 
   @override
+  String get analyzeWhole => '全体を再分析';
+
+  @override
+  String get analyzeWholeHelp => '文字起こし全体を一度にモデルへ送ります。分割分析より一貫した結果になりやすくなります。';
+
+  @override
+  String get wholeAnalysis => '全体分析';
+
+  @override
   String get noMatch => 'この会話には現在の分析ルールに該当する内容がありません。';
 
   @override
@@ -439,6 +448,8 @@ class AppLocalizationsJa extends AppLocalizations {
       'invalidRulesLength': '分析ルールは 1〜4,000 文字で入力してください。',
       'rulesOverBudget': '分析ルールが入力の上限を超えています。',
       'segmentOverBudget': '文字起こしの区間が入力の上限を超えています。',
+      'transcriptOverBudget': '文字起こし全体がモデルの入力上限を超えているため、一度に分析できません。',
+      'nothingToAnalyze': 'この記録にはまだ分析できるテキストがありません。',
       'queueFull': '分析キューがいっぱいです。原文は保持されています。未完了のタスクを処理して再試行してください。',
       'saveApiKey': '設定画面で API キーを保存してください。',
       'analysisIncomplete': '分析が完了していません。診断ログを確認してください。',

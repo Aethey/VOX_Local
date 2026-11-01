@@ -147,6 +147,10 @@ abstract class AnalysisJob with _$AnalysisJob {
 
     /// Language the provider is asked to write findings in.
     @Default('zh') String language,
+
+    /// True when the job carries the full transcript in one request
+    /// (manual re-analysis) instead of an incremental batch.
+    @Default(false) bool whole,
     @Default(JobPhase.pending) JobPhase phase,
     @Default(0) int attempts,
     DateTime? scheduledAt,

@@ -66,6 +66,42 @@ class AnalysisScreen extends ConsumerWidget {
     final colors = Theme.of(context).colorScheme;
     final text = Theme.of(context).textTheme;
     final muted = text.bodyMedium?.copyWith(color: colors.onSurfaceVariant);
+    final providerMissing =
+        (record.analysisProfile ?? configuration.profile) == null;
+    // Whole-transcript analysis only makes sense once the recording is over
+    // and there is text to send.
+    final canAnalyzeWhole =
+        record.status != RecordingStatus.recording &&
+        session.segments.isNotEmpty;
+    Future<void> analyzeWhole() async {
+      if (providerMissing) {
+        await const ProviderRoute().push(context);
+        if (!context.mounted ||
+            ref.read(sessionProvider).id != sessionId ||
+            ref.read(settingsProvider).profile == null) {
+          return;
+        }
+      }
+      if (context.mounted) {
+        await guardAction(
+          context,
+          () => ref.read(analysisProvider.notifier).analyzeWhole(),
+        );
+      }
+    }
+
+    Widget wholeButton() => FilledButton.tonalIcon(
+      key: const ValueKey('analyze-whole'),
+      onPressed: session.managing || waiting > 0 ? null : analyzeWhole,
+      icon: Icon(
+        providerMissing ? Icons.add_link_rounded : Icons.auto_awesome_outlined,
+      ),
+      label: Text(
+        providerMissing
+            ? context.l10n.configureAnalysisProvider
+            : context.l10n.analyzeWhole,
+      ),
+    );
     // Re-apply the record's analysis scope after a settings screen changed it.
     Future<void> reconfigureIfChanged<T>(
       T Function() read,
@@ -155,6 +191,22 @@ class AnalysisScreen extends ConsumerWidget {
           padding: const EdgeInsets.fromLTRB(4, 12, 4, 0),
           child: Text(context.l10n.analysisPrivacy, style: muted),
         ),
+        // With results on screen the whole-transcript action sits with the
+        // controls; the empty state below offers it as the primary action.
+        if (canAnalyzeWhole && results.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                wholeButton(),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
+                  child: Text(context.l10n.analyzeWholeHelp, style: muted),
+                ),
+              ],
+            ),
+          ),
         if (warning != null)
           Padding(
             padding: const EdgeInsets.only(top: 16),
@@ -212,45 +264,57 @@ class AnalysisScreen extends ConsumerWidget {
               children: [
                 const ConversationFlow(analysis: true),
                 const SizedBox(height: 24),
-                FilledButton.tonalIcon(
-                  onPressed: () async {
-                    if (!record.analysisEnabled) {
-                      if (record.analysisProfile == null &&
-                          ref.read(settingsProvider).profile == null) {
-                        await const ProviderRoute().push(context);
-                        if (!context.mounted ||
-                            ref.read(sessionProvider).id != sessionId ||
+                if (canAnalyzeWhole) ...[
+                  wholeButton(),
+                  if (!providerMissing)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                      child: Text(
+                        context.l10n.analyzeWholeHelp,
+                        style: muted,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                ] else
+                  FilledButton.tonalIcon(
+                    onPressed: () async {
+                      if (!record.analysisEnabled) {
+                        if (record.analysisProfile == null &&
                             ref.read(settingsProvider).profile == null) {
-                          return;
+                          await const ProviderRoute().push(context);
+                          if (!context.mounted ||
+                              ref.read(sessionProvider).id != sessionId ||
+                              ref.read(settingsProvider).profile == null) {
+                            return;
+                          }
                         }
+                        if (context.mounted) {
+                          await guardAction(
+                            context,
+                            () => ref
+                                .read(analysisProvider.notifier)
+                                .configure(true),
+                          );
+                        }
+                      } else {
+                        DefaultTabController.of(context).animateTo(0);
                       }
-                      if (context.mounted) {
-                        await guardAction(
-                          context,
-                          () => ref
-                              .read(analysisProvider.notifier)
-                              .configure(true),
-                        );
-                      }
-                    } else {
-                      DefaultTabController.of(context).animateTo(0);
-                    }
-                  },
-                  icon: Icon(
-                    (record.analysisProfile ?? configuration.profile) == null
-                        ? Icons.add_link_rounded
-                        : record.analysisEnabled
-                        ? Icons.mic_none_rounded
-                        : Icons.power_settings_new_rounded,
+                    },
+                    icon: Icon(
+                      (record.analysisProfile ?? configuration.profile) == null
+                          ? Icons.add_link_rounded
+                          : record.analysisEnabled
+                          ? Icons.mic_none_rounded
+                          : Icons.power_settings_new_rounded,
+                    ),
+                    label: Text(
+                      (record.analysisProfile ?? configuration.profile) == null
+                          ? context.l10n.configureAnalysisProvider
+                          : record.analysisEnabled
+                          ? context.l10n.startRecording
+                          : context.l10n.enableOnlineAnalysis,
+                    ),
                   ),
-                  label: Text(
-                    (record.analysisProfile ?? configuration.profile) == null
-                        ? context.l10n.configureAnalysisProvider
-                        : record.analysisEnabled
-                        ? context.l10n.startRecording
-                        : context.l10n.enableOnlineAnalysis,
-                  ),
-                ),
               ],
             ),
           ),
@@ -285,6 +349,14 @@ class _ResultCard extends StatelessWidget {
               spacing: 10,
               runSpacing: 2,
               children: [
+                if (job.whole)
+                  Text(
+                    context.l10n.wholeAnalysis,
+                    style: meta?.copyWith(
+                      color: colors.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 if (job.segments.isNotEmpty)
                   Text(
                     '${durationLabel(job.segments.first.start)} — ${durationLabel(job.segments.last.end)}',

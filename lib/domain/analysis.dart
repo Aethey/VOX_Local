@@ -105,6 +105,56 @@ class AnalysisPlanner {
       key,
     );
   }
+
+  /// Queues one job carrying every stored segment, independent of the
+  /// incremental cursor. The cursor is moved to the last segment so the
+  /// regular planner does not re-send the same text in batches.
+  Future<void> planWhole(
+    String sessionId,
+    ProviderProfile profile,
+    AnalysisTemplate template, {
+    String language = 'zh',
+  }) async {
+    profile.validate();
+    if (template.instruction.trim().isEmpty ||
+        template.instruction.length > 4000) {
+      throw const FormatException('invalidRulesLength');
+    }
+    final all = await store.segments(sessionId);
+    if (all.isEmpty) throw const FormatException('nothingToAnalyze');
+    final budget = profile.inputCharacters - template.instruction.length - 1800;
+    if (budget < 500) throw const FormatException('rulesOverBudget');
+    final size = all.fold<int>(
+      0,
+      (sum, segment) => sum + jsonEncode(segment.toJson()).length,
+    );
+    if (size > budget) throw const FormatException('transcriptOverBudget');
+    if (await store.pendingCount() >= 100) {
+      throw const AppFailure(FailureKind.storage, 'queueFull');
+    }
+    final key = '$sessionId:${profile.id}:${template.id}:${template.version}';
+    final now = clock.now();
+    // Each manual run is a distinct job; the timestamp keeps ids unique.
+    final id = sha256
+        .convert(utf8.encode('$key:whole:${now.microsecondsSinceEpoch}'))
+        .toString();
+    final inserted = await store.enqueue(
+      AnalysisJob(
+        id: id,
+        sessionId: sessionId,
+        profile: profile,
+        template: template,
+        segments: all,
+        context: '',
+        createdAt: now,
+        language: language,
+        whole: true,
+      ),
+      await store.cursor(key),
+      key,
+    );
+    if (!inserted) throw const FormatException('operationFailed');
+  }
 }
 
 class AnalysisWorker {

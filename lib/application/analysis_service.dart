@@ -184,6 +184,43 @@ class AnalysisService extends ObservableState<List<AnalysisJob>> {
     await tick(force: true);
   }
 
+  /// Sends the whole transcript of the open, finished recording in a single
+  /// request. Uses the scope the analysis page shows: the record's own
+  /// profile/template, else the current settings. Analysis is switched on
+  /// for the record because the worker only claims jobs of enabled records.
+  Future<void> analyzeWhole() async {
+    final record = session.value.record;
+    if (record == null) throw const FormatException('chooseRecordingFirst');
+    if (record.status == RecordingStatus.recording) {
+      throw const FormatException('finishRecordingFirst');
+    }
+    final profile = record.analysisProfile ?? settings.value.profile;
+    final template = record.analysisTemplate ?? settings.value.template;
+    if (profile == null) throw const FormatException('enterApiKey');
+    final scope = '${profile.id}:${template.id}:${template.version}';
+    if (!record.analysisEnabled || record.analysisScope != scope) {
+      if (worker.activeSessionId == record.id) worker.pause();
+      try {
+        await session.configureAnalysis(
+          enabled: true,
+          profile: profile,
+          template: template,
+        );
+      } finally {
+        worker.resume();
+      }
+    }
+    await planner.planWhole(
+      record.id,
+      profile,
+      template,
+      language: settings.value.analysisLanguage,
+    );
+    _lastPlan.removeWhere((key, _) => key.startsWith('${record.id}:'));
+    _unplannable.removeWhere((key) => key.startsWith('${record.id}:'));
+    await tick(force: true);
+  }
+
   Future<void> removeRecording(String id) async {
     if (!_removing.add(id)) return;
     if (worker.activeSessionId == null || worker.activeSessionId == id) {

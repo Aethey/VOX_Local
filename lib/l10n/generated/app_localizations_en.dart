@@ -151,6 +151,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enableOnlineAnalysis => 'Enable online analysis';
 
   @override
+  String get analyzeWhole => 'Re-analyze whole transcript';
+
+  @override
+  String get analyzeWholeHelp =>
+      'Sends the full transcript to the model in one request. Results are usually more coherent than batch analysis.';
+
+  @override
+  String get wholeAnalysis => 'Whole transcript';
+
+  @override
   String get noMatch =>
       'No matches for the current analysis rules in this part of the conversation.';
 
@@ -479,6 +489,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'invalidRulesLength': 'Analysis rules must contain 1–4,000 characters.',
       'rulesOverBudget': 'Analysis rules exceed the input budget.',
       'segmentOverBudget': 'A transcript segment exceeds the input budget.',
+      'transcriptOverBudget': 'The full transcript exceeds the model input budget and cannot be analyzed in one request.',
+      'nothingToAnalyze': 'This recording has no text to analyze yet.',
       'queueFull': 'The analysis queue is full. Original text is kept. Resolve pending tasks and retry.',
       'saveApiKey': 'Save an API key in Settings.',
       'analysisIncomplete': 'Analysis is incomplete. Check Diagnostics.',

@@ -143,6 +143,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get enableOnlineAnalysis => '开启在线分析';
 
   @override
+  String get analyzeWhole => '整体重新分析';
+
+  @override
+  String get analyzeWholeHelp => '把完整转写一次性发送给模型，结果通常比分段分析更连贯。';
+
+  @override
+  String get wholeAnalysis => '整体分析';
+
+  @override
   String get noMatch => '这段对话没有命中当前关注点。';
 
   @override
@@ -431,6 +440,8 @@ class AppLocalizationsZh extends AppLocalizations {
       'invalidRulesLength': '分析规则须为 1–4000 个字符',
       'rulesOverBudget': '分析规则超出当前输入预算',
       'segmentOverBudget': '单个转写片段超出输入预算',
+      'transcriptOverBudget': '完整转写超出模型输入预算，无法一次性分析',
+      'nothingToAnalyze': '这条记录还没有可分析的文字',
       'queueFull': '分析队列已满，原文已保留；请处理未完成任务后重试',
       'saveApiKey': '请在设置中保存 API 密钥',
       'analysisIncomplete': '分析暂未完成，请查看诊断记录',

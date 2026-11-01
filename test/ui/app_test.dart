@@ -267,6 +267,69 @@ void main() {
       await tester.runAsync(runtime.dispose);
     }
   });
+  testWidgets('a finished recording can be re-analyzed as a whole', (
+    tester,
+  ) async {
+    final runtime = await fixture();
+    await runtime.settings.saveProfile(profile, 'synthetic-fixture');
+    await runtime.store.saveRecording(
+      RecordingSummary(
+        id: 'saved',
+        createdAt: runtime.clock.now(),
+        updatedAt: runtime.clock.now(),
+        title: '合成记录',
+      ),
+    );
+    await runtime.store.appendSegment(segment(1, sessionId: 'saved'));
+    await runtime.store.appendSegment(segment(2, sessionId: 'saved'));
+    // The app starts this listener; without it a finished job never reaches
+    // the screen. No timer, so pumpAndSettle can settle.
+    await runtime.analysis.initialize(runTimer: false);
+    addTearDown(() async {
+      await tester.pumpWidget(const SizedBox.shrink());
+      await runtime.dispose();
+    });
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [runtimeProvider.overrideWithValue(runtime)],
+        child: const VoxApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('合成记录'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('分析'));
+    await tester.pumpAndSettle();
+    final button = find.byKey(const ValueKey('analyze-whole'));
+    expect(
+      find.descendant(of: button, matching: find.text('整体重新分析')),
+      findsOneWidget,
+    );
+    await tester.tap(button);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump();
+    final jobs = (runtime.store as MemoryStore).queue.values.toList();
+    expect(jobs, hasLength(1));
+    expect(jobs.single.whole, isTrue);
+    expect(jobs.single.segments, hasLength(2));
+    expect(jobs.single.phase, JobPhase.succeeded);
+    for (var i = 0; i < 10 && find.text('整体分析').evaluate().isEmpty; i++) {
+      await tester.pump(const Duration(milliseconds: 50));
+    }
+    if (find.text('整体分析').evaluate().isEmpty) {
+      await tester.scrollUntilVisible(
+        find.text('整体分析'),
+        300,
+        scrollable: find.descendant(
+          of: find.byType(ListView),
+          matching: find.byType(Scrollable),
+        ),
+      );
+    }
+    expect(find.text('整体分析'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
   testWidgets('provider configuration can be cleared after confirmation', (
     tester,
   ) async {
