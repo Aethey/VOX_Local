@@ -61,3 +61,13 @@ key.properties
 *.pcm
 *.wav
 *.m4a
+/.avatar_sdk/
+/lib/application/avatar_defaults.dart
+/assets/avatar/hiyori/*
+!/assets/avatar/hiyori/README.md
+!/assets/avatar/preview.pcm
+/assets/wanko_ja/*
+!/assets/wanko_ja/runtime/
+/assets/wanko_ja/runtime/*
+!/assets/wanko_ja/runtime/VoxWanko.model3.json
+!/assets/wanko_ja/runtime/expressions/

@@ -1,0 +1,131 @@
+{
+  "Version": 3,
+  "FileReferences": {
+    "Moc": "wanko_touch.moc3",
+    "Textures": [
+      "wanko_touch.1024/texture_00.png"
+    ],
+    "Physics": "wanko_touch.physics3.json",
+    "DisplayInfo": "wanko_touch.cdi3.json",
+    "Motions": {
+      "Idle": [
+        {
+          "File": "motion/idle_01.motion3.json"
+        },
+        {
+          "File": "motion/idle_03.motion3.json"
+        },
+        {
+          "File": "motion/idle_04.motion3.json"
+        }
+      ],
+      "Flick3": [
+        {
+          "File": "motion/idle_02.motion3.json"
+        },
+        {
+          "File": "motion/touch_01.motion3.json"
+        }
+      ],
+      "Shake": [
+        {
+          "File": "motion/shake_01.motion3.json"
+        }
+      ],
+      "FlickUp": [
+        {
+          "File": "motion/shake_02.motion3.json"
+        }
+      ],
+      "Tap": [
+        {
+          "File": "motion/touch_02.motion3.json"
+        },
+        {
+          "File": "motion/touch_04.motion3.json"
+        }
+      ],
+      "Flick": [
+        {
+          "File": "motion/touch_03.motion3.json"
+        },
+        {
+          "File": "motion/touch_05.motion3.json"
+        }
+      ],
+      "FlickLeft": [
+        {
+          "File": "motion/touch_06.motion3.json"
+        }
+      ]
+    },
+    "Expressions": [
+      {
+        "Name": "idle",
+        "File": "expressions/idle.exp3.json"
+      },
+      {
+        "Name": "listening",
+        "File": "expressions/listening.exp3.json"
+      },
+      {
+        "Name": "thinking",
+        "File": "expressions/thinking.exp3.json"
+      },
+      {
+        "Name": "speaking_0",
+        "File": "expressions/speaking_0.exp3.json"
+      },
+      {
+        "Name": "speaking_1",
+        "File": "expressions/speaking_1.exp3.json"
+      },
+      {
+        "Name": "speaking_2",
+        "File": "expressions/speaking_2.exp3.json"
+      },
+      {
+        "Name": "speaking_3",
+        "File": "expressions/speaking_3.exp3.json"
+      },
+      {
+        "Name": "speaking_4",
+        "File": "expressions/speaking_4.exp3.json"
+      },
+      {
+        "Name": "speaking_5",
+        "File": "expressions/speaking_5.exp3.json"
+      },
+      {
+        "Name": "speaking_6",
+        "File": "expressions/speaking_6.exp3.json"
+      },
+      {
+        "Name": "speaking_7",
+        "File": "expressions/speaking_7.exp3.json"
+      },
+      {
+        "Name": "speaking_8",
+        "File": "expressions/speaking_8.exp3.json"
+      }
+    ]
+  },
+  "Groups": [
+    {
+      "Target": "Parameter",
+      "Name": "EyeBlink",
+      "Ids": [
+        "PARAM_EYE_L_OPEN",
+        "PARAM_EYE_R_OPEN"
+      ]
+    },
+    {
+      "Target": "Parameter",
+      "Name": "LipSync",
+      "Ids": [
+        "PARAM_MOUTH_OPEN_Y"
+      ]
+    }
+  ],
+  "HitAreas": []
+}

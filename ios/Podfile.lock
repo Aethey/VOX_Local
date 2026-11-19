@@ -3,27 +3,40 @@ PODS:
   - flutter_secure_storage_darwin (10.0.0):
     - Flutter
     - FlutterMacOS
+  - flutter_webrtc (1.6.3):
+    - Flutter
+    - WebRTC-SDK (= 150.7871.04)
   - sqflite_darwin (0.0.4):
     - Flutter
     - FlutterMacOS
+  - WebRTC-SDK (150.7871.04)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_secure_storage_darwin (from `.symlinks/plugins/flutter_secure_storage_darwin/darwin`)
+  - flutter_webrtc (from `.symlinks/plugins/flutter_webrtc/ios`)
   - sqflite_darwin (from `.symlinks/plugins/sqflite_darwin/darwin`)
+
+SPEC REPOS:
+  trunk:
+    - WebRTC-SDK
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
   flutter_secure_storage_darwin:
     :path: ".symlinks/plugins/flutter_secure_storage_darwin/darwin"
+  flutter_webrtc:
+    :path: ".symlinks/plugins/flutter_webrtc/ios"
   sqflite_darwin:
     :path: ".symlinks/plugins/sqflite_darwin/darwin"
 
 SPEC CHECKSUMS:
   Flutter: 71a624a5bc0c04062bf19101d501e466baf2fb47
   flutter_secure_storage_darwin: 46e401699982ee74142909676535e0f6a7321e58
+  flutter_webrtc: 7948417965923736a584f9a1c5eeccaccf3372cf
   sqflite_darwin: 20b2a3a3b70e43edae938624ce550a3cbf66a3d0
+  WebRTC-SDK: 71bce2be85c3082d24bbfd1a9930ea07d0c494c1
 
 PODFILE CHECKSUM: 644d08ab4036fa2470516005507127d9b9dbcba1
 

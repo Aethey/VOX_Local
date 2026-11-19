@@ -6,7 +6,7 @@ part of 'routes.dart';
 // GoRouterGenerator
 // **************************************************************************
 
-List<RouteBase> get $appRoutes => [$workspaceRoute];
+List<RouteBase> get $appRoutes => [$workspaceRoute, $avatarRoute];
 
 RouteBase get $workspaceRoute => GoRouteData.$route(
   path: '/',
@@ -181,4 +181,30 @@ T? _$convertMapValue<T>(
 ) {
   final value = map[key];
   return value == null ? null : converter(value);
+}
+
+RouteBase get $avatarRoute => GoRouteData.$route(
+  path: '/avatar',
+  hasOverriddenOnExit: false,
+  factory: $AvatarRoute._fromState,
+);
+
+mixin $AvatarRoute on GoRouteData {
+  static AvatarRoute _fromState(GoRouterState state) => const AvatarRoute();
+
+  @override
+  String get location => GoRouteData.$location('/avatar');
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
 }

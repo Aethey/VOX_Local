@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,18 +12,25 @@ import 'ui/theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const VoxBootstrap());
+  runApp(VoxBootstrap(startWithAvatar: Platform.isAndroid));
 }
 
 class VoxBootstrap extends StatefulWidget {
-  const VoxBootstrap({super.key});
+  const VoxBootstrap({this.startWithAvatar = false, super.key});
+
+  final bool startWithAvatar;
+
   @override
   State<VoxBootstrap> createState() => _VoxBootstrapState();
 }
 
 class _VoxBootstrapState extends State<VoxBootstrap> {
-  late Future<AppRuntime> _future = AppRuntime.create();
+  late Future<AppRuntime> _future = _createRuntime();
   AppRuntime? _runtime;
+
+  Future<AppRuntime> _createRuntime() =>
+      AppRuntime.create(warmModel: !widget.startWithAvatar);
+
   @override
   void dispose() {
     if (_runtime != null) unawaited(_runtime!.dispose());
@@ -37,7 +45,7 @@ class _VoxBootstrapState extends State<VoxBootstrap> {
         _runtime = snapshot.data;
         return ProviderScope(
           overrides: [runtimeProvider.overrideWithValue(snapshot.requireData)],
-          child: const VoxApp(),
+          child: VoxApp(startWithAvatar: widget.startWithAvatar),
         );
       }
       return MaterialApp(
@@ -60,7 +68,7 @@ class _VoxBootstrapState extends State<VoxBootstrap> {
                             SizedBox(height: 20),
                             FilledButton(
                               onPressed: () =>
-                                  setState(() => _future = AppRuntime.create()),
+                                  setState(() => _future = _createRuntime()),
                               child: Text(context.l10n.reopen),
                             ),
                           ],
@@ -70,7 +78,9 @@ class _VoxBootstrapState extends State<VoxBootstrap> {
                           children: [
                             Icon(Icons.spa_outlined, size: 42),
                             SizedBox(height: 20),
-                            Text('Vox Local'),
+                            Text(
+                              widget.startWithAvatar ? 'Vox Live' : 'Vox Local',
+                            ),
                             SizedBox(height: 24),
                             CircularProgressIndicator(),
                           ],
@@ -86,13 +96,16 @@ class _VoxBootstrapState extends State<VoxBootstrap> {
 }
 
 class VoxApp extends ConsumerStatefulWidget {
-  const VoxApp({super.key});
+  const VoxApp({this.startWithAvatar = false, super.key});
+
+  final bool startWithAvatar;
+
   @override
   ConsumerState<VoxApp> createState() => _VoxAppState();
 }
 
 class _VoxAppState extends ConsumerState<VoxApp> {
-  final router = createRouter();
+  late final router = createRouter(startWithAvatar: widget.startWithAvatar);
   @override
   void dispose() {
     router.dispose();
@@ -106,7 +119,7 @@ class _VoxAppState extends ConsumerState<VoxApp> {
       locale: language == 'system' ? null : Locale(language),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      title: 'Vox Local',
+      title: widget.startWithAvatar ? 'Vox Live' : 'Vox Local',
       debugShowCheckedModeBanner: false,
       theme: VoxTheme.make(Brightness.light),
       darkTheme: VoxTheme.make(Brightness.dark),

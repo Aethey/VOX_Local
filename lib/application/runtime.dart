@@ -39,7 +39,7 @@ class AppRuntime {
   final NetworkService? network;
   RecordingLibrary? _library;
   RecordingLibrary get library => _library ??= RecordingLibrary(store);
-  static Future<AppRuntime> create() async {
+  static Future<AppRuntime> create({bool warmModel = true}) async {
     final directory = await getApplicationSupportDirectory();
     final store = await SqliteLocalStore.open('${directory.path}/vox.sqlite');
     const credentials = SecureCredentials();
@@ -93,17 +93,21 @@ class AppRuntime {
       analysis: analysis,
       network: network,
     );
-    final selected = models.value.where(
-      (m) => m.id == settings.value.model && m.installed,
-    );
-    if (selected.isNotEmpty) {
+    if (warmModel) runtime.warmInstalledModel();
+    return runtime;
+  }
+
+  void warmInstalledModel() {
+    final selected = settings.value.model;
+    if (models.value.any(
+      (model) => model.id == selected && model.phase == 'installed',
+    )) {
       unawaited(
         models
-            .prepare(settings.value.model, sessionActive: false)
+            .prepare(selected, sessionActive: session.value.active)
             .catchError((Object _) {}),
       );
     }
-    return runtime;
   }
 
   Future<void> dispose() async {

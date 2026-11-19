@@ -1,0 +1,311 @@
+--- a/android/src/main/kotlin/com/linh18nd/flutter_live2d/Live2DPlatformView.kt
++++ b/android/src/main/kotlin/com/linh18nd/flutter_live2d/Live2DPlatformView.kt
+@@ -50,14 +50,14 @@
+     }
+ 
+     fun loadModel(modelDir: String, modelFileName: String, callback: (Boolean) -> Unit) {
+-        Live2DRenderHub.queueEvent(nativeHandle) {
++        renderView.queueEvent {
+             val ok = Live2DBridge.nativeLoadModel(nativeHandle, modelDir, modelFileName)
+             callback(ok)
+         }
+     }
+ 
+     fun unloadModel(callback: () -> Unit) {
+-        Live2DRenderHub.queueEvent(nativeHandle) {
++        renderView.queueEvent {
+             Live2DBridge.nativeUnloadModel(nativeHandle)
+             callback()
+         }
+@@ -68,25 +68,25 @@
+     }
+ 
+     fun startMotion(group: String, index: Int, priority: Int) {
+-        Live2DRenderHub.queueEvent(nativeHandle) {
++        renderView.queueEvent {
+             Live2DBridge.nativeStartMotion(nativeHandle, group, index, priority)
+         }
+     }
+ 
+     fun setExpression(index: Int) {
+-        Live2DRenderHub.queueEvent(nativeHandle) {
++        renderView.queueEvent {
+             Live2DBridge.nativeSetExpression(nativeHandle, index)
+         }
+     }
+ 
+     fun setParameter(parameterId: String, value: Float) {
+-        Live2DRenderHub.queueEvent(nativeHandle) {
++        renderView.queueEvent {
+             Live2DBridge.nativeSetParameter(nativeHandle, parameterId, value)
+         }
+     }
+ 
+     fun setMotionSpeed(speed: Float) {
+-        Live2DRenderHub.queueEvent(nativeHandle) {
++        renderView.queueEvent {
+             Live2DBridge.nativeSetMotionSpeed(nativeHandle, speed)
+         }
+     }
+@@ -96,6 +96,12 @@
+     context: Context,
+     private val nativeHandle: Long,
+ ) : TextureView(context), TextureView.SurfaceTextureListener {
++    // Flutter can issue a load before the TextureView is attached.
++    private val renderActions = LinkedBlockingQueue<() -> Unit>()
++
++    fun queueEvent(action: () -> Unit) {
++        renderActions.offer(action)
++    }
+ 
+     init {
+         surfaceTextureListener = this
+@@ -106,13 +112,13 @@
+         val x = event.x
+         val y = event.y
+         when (event.action) {
+-            MotionEvent.ACTION_DOWN -> Live2DRenderHub.queueEvent(nativeHandle) {
++            MotionEvent.ACTION_DOWN -> queueEvent {
+                 Live2DBridge.nativeOnTouchBegan(nativeHandle, x, y)
+             }
+-            MotionEvent.ACTION_MOVE -> Live2DRenderHub.queueEvent(nativeHandle) {
++            MotionEvent.ACTION_MOVE -> queueEvent {
+                 Live2DBridge.nativeOnTouchMoved(nativeHandle, x, y)
+             }
+-            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> Live2DRenderHub.queueEvent(nativeHandle) {
++            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> queueEvent {
+                 Live2DBridge.nativeOnTouchEnded(nativeHandle, x, y)
+             }
+         }
+@@ -120,7 +126,7 @@
+     }
+ 
+     override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
+-        Live2DRenderHub.registerView(nativeHandle, surface, width, height)
++        Live2DRenderHub.registerView(nativeHandle, surface, width, height, renderActions)
+     }
+ 
+     override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) {
+@@ -161,6 +167,7 @@
+     private class HubView(
+         val handle: Long,
+         val surfaceTexture: SurfaceTexture,
++        val renderActions: LinkedBlockingQueue<() -> Unit>,
+         @Volatile var width: Int,
+         @Volatile var height: Int,
+         @Volatile var paused: Boolean = false,
+@@ -174,7 +181,6 @@
+     private val running = AtomicBoolean(false)
+     private val viewsLock = Any()
+     private val views = mutableListOf<HubView>()
+-    private val pendingActions = LinkedBlockingQueue<Pair<Long, () -> Unit>>()
+     private val newSurfaces = LinkedBlockingQueue<HubView>()
+ 
+     private var thread: Thread? = null
+@@ -182,20 +188,22 @@
+     private var eglConfig: EGLConfig? = null
+     private var eglContext: EGLContext = EGL14.EGL_NO_CONTEXT
+ 
+-    fun registerView(handle: Long, surface: SurfaceTexture, width: Int, height: Int) {
++    fun registerView(
++        handle: Long,
++        surface: SurfaceTexture,
++        width: Int,
++        height: Int,
++        renderActions: LinkedBlockingQueue<() -> Unit>,
++    ) {
+         // If the same handle was registered before (rare; should not happen
+         // with current lifecycle), make sure we discard the old entry first.
+-        val view = HubView(handle, surface, width, height)
++        val view = HubView(handle, surface, renderActions, width, height)
+         synchronized(viewsLock) {
+             views.removeAll { it.handle == handle }
+             views.add(view)
+             ensureStarted()
+         }
+         newSurfaces.offer(view)
+-    }
+-
+-    fun queueEvent(handle: Long, action: () -> Unit) {
+-        pendingActions.offer(handle to action)
+     }
+ 
+     fun setPaused(handle: Long, paused: Boolean) {
+@@ -262,28 +270,11 @@
+             //    so we never touch a doomed view's native state again.
+             reapDoomed()
+ 
+-            // 3. Drain queued events (loadModel, startMotion, ...).
+-            //    Skip events for views that have been disposed.
+-            while (true) {
+-                val pair = pendingActions.poll() ?: break
+-                val (handle, action) = pair
+-                val target = synchronized(viewsLock) {
+-                    views.firstOrNull { it.handle == handle && !it.doomed }
+-                }
+-                if (target != null && target.eglSurface != EGL14.EGL_NO_SURFACE) {
+-                    EGL14.eglMakeCurrent(
+-                        eglDisplay, target.eglSurface, target.eglSurface, eglContext
+-                    )
+-                    action()
+-                }
+-            }
+-
+-            // 4. Render every active view.
++            // 3. Apply queued actions and render ready views.
+             val snapshot = synchronized(viewsLock) { views.toList() }
+             var anyDrawn = false
+             for (v in snapshot) {
+                 if (v.doomed) continue
+-                if (v.paused) continue
+                 if (v.eglSurface == EGL14.EGL_NO_SURFACE) continue
+                 if (v.width <= 0 || v.height <= 0) continue
+ 
+@@ -299,6 +290,12 @@
+                     v.sizeDirty = false
+                 }
+ 
++                while (!v.doomed) {
++                    val action = v.renderActions.poll() ?: break
++                    action()
++                }
++                if (v.paused || v.doomed) continue
++
+                 Live2DBridge.nativeOnDrawFrame(v.handle)
+                 EGL14.eglSwapBuffers(eglDisplay, v.eglSurface)
+                 anyDrawn = true
+@@ -324,13 +321,16 @@
+                         eglDisplay, v.eglSurface, v.eglSurface, eglContext
+                     )
+                     Live2DBridge.nativeOnSurfaceDestroyed(v.handle)
++                    Live2DBridge.nativeDestroyView(v.handle)
+                     EGL14.eglMakeCurrent(
+-                        eglDisplay, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_SURFACE, eglContext
++                        eglDisplay, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_CONTEXT
+                     )
+                     EGL14.eglDestroySurface(eglDisplay, v.eglSurface)
+                     v.eglSurface = EGL14.EGL_NO_SURFACE
++                } else {
++                    Live2DBridge.nativeDestroyView(v.handle)
+                 }
+-                Live2DBridge.nativeDestroyView(v.handle)
++                v.renderActions.clear()
+             } finally {
+                 synchronized(viewsLock) { views.remove(v) }
+                 v.disposeLatch?.countDown()
+--- a/android/src/main/cpp/CubismFramework/Rendering/OpenGL/CubismShader_OpenGLES2.hpp
++++ b/android/src/main/cpp/CubismFramework/Rendering/OpenGL/CubismShader_OpenGLES2.hpp
+@@ -59,7 +59,7 @@
+      *
+      * @return  インスタンスのポインタ
+      */
+-    static CubismShader_OpenGLES2* GetInstance();
++    static CubismShader_OpenGLES2* GetInstance(csmBool needsExtendedBlend = false);
+ 
+     /**
+      * @brief   インスタンスを解放する（シングルトン）。
+@@ -223,7 +223,7 @@
+     /**
+      * @brief   シェーダプログラムを初期化する
+      */
+-    void GenerateShaders();
++    void GenerateShaders(csmBool needsExtendedBlend);
+ 
+     /**
+      * @brief   ファイルからシェーダプログラムをロードし、シェーダーオブジェクトの番号を返す。
+@@ -335,6 +335,7 @@
+     static csmBool  s_extPAMode;    ///< 拡張方式のPA設定用の変数
+ #endif
+ 
++    csmBool _hasExtendedBlend = false;
+     csmVector<CubismShaderSet*> _shaderSets;   ///< ロードしたシェーダプログラムを保持する変数
+ 
+ };
+--- a/android/src/main/cpp/CubismFramework/Rendering/OpenGL/CubismShader_OpenGLES2.cpp
++++ b/android/src/main/cpp/CubismFramework/Rendering/OpenGL/CubismShader_OpenGLES2.cpp
+@@ -131,8 +131,8 @@
+         {
+             glDeleteProgram(_shaderSets[i]->ShaderProgram);
+             _shaderSets[i]->ShaderProgram = 0;
+-            CSM_DELETE(_shaderSets[i]);
+-        }
++        }
++        CSM_DELETE(_shaderSets[i]);
+     }
+ }
+ 
+@@ -299,12 +299,16 @@
+     ReleaseShaderProgram();
+ }
+ 
+-CubismShader_OpenGLES2* CubismShader_OpenGLES2::GetInstance()
+-{
++CubismShader_OpenGLES2* CubismShader_OpenGLES2::GetInstance(csmBool needsExtendedBlend)
++{
++    if (s_instance && needsExtendedBlend && !s_instance->_hasExtendedBlend)
++    {
++        DeleteInstance();
++    }
+     if (s_instance == NULL)
+     {
+         s_instance = CSM_NEW CubismShader_OpenGLES2();
+-        s_instance->GenerateShaders();
++        s_instance->GenerateShaders(needsExtendedBlend);
+     }
+     return s_instance;
+ }
+@@ -328,8 +332,9 @@
+ }
+ #endif
+ 
+-void CubismShader_OpenGLES2::GenerateShaders()
+-{
++void CubismShader_OpenGLES2::GenerateShaders(csmBool needsExtendedBlend)
++{
++    _hasExtendedBlend = needsExtendedBlend;
+     if (_shaderSets.GetSize() > 0)
+     {
+         return;
+@@ -354,6 +359,7 @@
+         _shaderSets[ShaderNames_NormalMaskedInvertedPremultipliedAlpha]->ShaderProgram = LoadShaderProgramFromFile("VertShaderSrcMasked.vert", "FragShaderSrcMaskInvertedPremultipliedAlphaTegra.frag");
+ 
+         // ブレンドモードの組み合わせ分作成
++        if (needsExtendedBlend)
+         {
+             csmUint32 offset = ShaderNames_NormalAtop;
+             for (csmInt32 i = 0; i < ColorBlendMode_Count; ++i)
+@@ -385,6 +391,7 @@
+         _shaderSets[ShaderNames_NormalMaskedInvertedPremultipliedAlpha]->ShaderProgram = LoadShaderProgramFromFile("VertShaderSrcMasked.vert", "FragShaderSrcMaskInvertedPremultipliedAlpha.frag");
+ 
+         // ブレンドモードの組み合わせ分作成
++        if (needsExtendedBlend)
+         {
+             csmUint32 offset = ShaderNames_NormalAtop;
+             for (csmInt32 i = 0; i < ColorBlendMode_Count; ++i)
+@@ -450,6 +457,7 @@
+     _shaderSets[ShaderNames_MultMaskedInvertedPremultipliedAlpha]->ShaderProgram = _shaderSets[ShaderNames_NormalMaskedInvertedPremultipliedAlpha]->ShaderProgram;
+ 
+     // ブレンドモードの組み合わせ分作成
++    if (needsExtendedBlend)
+     {
+         csmUint32 offset = ShaderNames_NormalAtop;
+         for (csmInt32 i = 0; i < ColorBlendMode_Count; ++i)
+@@ -523,6 +531,7 @@
+     SetShaderSet(*_shaderSets[ShaderNames_MultMaskedInvertedPremultipliedAlpha], MaskType_MaskedInvertedPremultipliedAlpha);
+ 
+     // ブレンドモードの組み合わせ分作成
++    if (needsExtendedBlend)
+     {
+         csmUint32 offset = ShaderNames_NormalAtop;
+         for (csmInt32 i = 0; i < ColorBlendMode_Count; ++i)
+--- a/android/src/main/cpp/CubismFramework/Rendering/OpenGL/CubismRenderer_OpenGLES2.cpp
++++ b/android/src/main/cpp/CubismFramework/Rendering/OpenGL/CubismRenderer_OpenGLES2.cpp
+@@ -638,7 +638,7 @@
+     CubismRenderer::Initialize(model, maskBufferCount);  //親クラスの処理を呼ぶ
+ 
+     // シェーダの事前初期化
+-    CubismShader_OpenGLES2::GetInstance();
++    CubismShader_OpenGLES2::GetInstance(model->IsBlendModeEnabled());
+ }
+ 
+ void CubismRenderer_OpenGLES2::SetupParentOffscreens(const CubismModel* model, csmInt32 offscreenCount)

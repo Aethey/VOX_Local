@@ -15,6 +15,7 @@ android {
     }
 
     defaultConfig {
+        ndk { abiFilters += listOf("arm64-v8a", "x86_64") }
         externalNativeBuild { cmake { arguments += "-DCMAKE_BUILD_TYPE=Release" } }
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.vox_local"

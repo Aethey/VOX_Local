@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'screens/avatar_screen.dart';
 import 'screens/log_screen.dart';
 import 'screens/model_screen.dart';
 import 'screens/provider_screen.dart';
@@ -63,4 +64,16 @@ class RecordRoute extends GoRouteData with $RecordRoute {
       RecordScreen(id: id);
 }
 
-GoRouter createRouter() => GoRouter(routes: $appRoutes);
+@TypedGoRoute<AvatarRoute>(path: '/avatar')
+class AvatarRoute extends GoRouteData with $AvatarRoute {
+  const AvatarRoute();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const AvatarScreen();
+}
+
+GoRouter createRouter({bool startWithAvatar = false}) => GoRouter(
+  initialLocation: startWithAvatar ? const AvatarRoute().location : '/',
+  routes: $appRoutes,
+);

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../../l10n/localization.dart';
@@ -30,6 +32,14 @@ class WorkspaceScreen extends StatelessWidget {
         final wide = constraints.maxWidth >= 700;
         return Scaffold(
           appBar: AppBar(
+            actions: [
+              if (Platform.isAndroid)
+                IconButton(
+                  tooltip: 'Vox Live',
+                  onPressed: () => const AvatarRoute().go(context),
+                  icon: const Icon(Icons.record_voice_over_outlined),
+                ),
+            ],
             title: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
