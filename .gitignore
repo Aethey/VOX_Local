@@ -71,3 +71,5 @@ key.properties
 /assets/wanko_ja/runtime/*
 !/assets/wanko_ja/runtime/VoxWanko.model3.json
 !/assets/wanko_ja/runtime/expressions/
+
+/docs/
